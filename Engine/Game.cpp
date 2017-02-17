@@ -20,13 +20,15 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
 	board(gfx),
-	snake({ 2, 2 })
+	snake({ 2, 2 }, 3),
+	goal(board)
 {
 }
 
@@ -40,33 +42,49 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (wnd.kbd.KeyIsPressed(VK_UP))
+	if (!gameOver)
 	{
-		newLoc = snake.top;
-	}
-	else if (wnd.kbd.KeyIsPressed(VK_DOWN))
-	{
-		newLoc = snake.bottom;
-	}
-	else if (wnd.kbd.KeyIsPressed(VK_LEFT))
-	{
-		newLoc = snake.left;
-	}
-	else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-	{
-		newLoc = snake.right;
-	}
+		if (wnd.kbd.KeyIsPressed(VK_UP))
+		{
+			newLoc = snake.top;
+		}
+		else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+		{
+			newLoc = snake.bottom;
+		}
+		else if (wnd.kbd.KeyIsPressed(VK_LEFT))
+		{
+			newLoc = snake.left;
+		}
+		else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+		{
+			newLoc = snake.right;
+		}
 
-	if (needUpdate == 0)
-	{
-		snake.MoveBy(newLoc);
+		if (needUpdate == 0)
+		{
+			if (snake.posIsInsideHead(goal.getPosition(), newLoc))
+			{
+				snake.Grow();
+				goal.Respawn(snake.GetHeadPos());
+			}
+			snake.MoveBy(newLoc);
 
-		needUpdate = 20;
+			needUpdate = 20;
+		}
+		--needUpdate;
+
+		if (snake.hitItselfAfterDeltaPos(newLoc))
+		{
+			gameOver = true;
+		}
 	}
-	--needUpdate;
 }
 
 void Game::ComposeFrame()
 {
+	if (gameOver)
+		SpriteCodex::DrawGameOver(200, 200, gfx);
 	snake.Draw(board);
+	goal.Draw();
 }

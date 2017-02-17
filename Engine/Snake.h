@@ -13,11 +13,14 @@ public:
 		right, left, top, bottom
 	};
 
-	Snake(const Vec2& loc);
+	Snake(const Vec2& loc, int nStartingBodyTiles);
 
 	void MoveBy(moveLocation newLoc);
 	void Grow();
 	void Draw(Board& board);
+	bool hitItselfAfterDeltaPos(moveLocation deltaPos);
+	bool posIsInsideHead(const Vec2& loc, moveLocation deltaPos);
+	Vec2 GetHeadPos() const;
 private:
 	class Segment
 	{
@@ -31,6 +34,7 @@ private:
 		void Draw(Board& board);
 		void Follow(const Segment& segment);
 		void MoveBy(moveLocation newLoc);
+		Vec2 GetPosition() const;
 	};
 
 	static constexpr Color headColor = Colors::Red;

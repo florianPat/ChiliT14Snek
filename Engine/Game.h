@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "Board.h"
 #include "Snake.h"
+#include "Goal.h"
 
 class Game
 {
@@ -44,9 +45,12 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	bool gameOver = false;
 	Board board;
 	Snake snake;
 	Snake::moveLocation newLoc = snake.right;
+	Snake::moveLocation lastLoc = snake.right;
+	Goal goal;
 	int needUpdate = 20;
 	/********************************/
 };

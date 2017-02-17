@@ -256,7 +256,7 @@ void Graphics::DrawRect(Vec2 begin, int width, int height, Color c)
 {
 	for (int i = begin.x; i < begin.x + width; i++)
 	{
-		for (int j = begin.y; j < begin.x + height; j++)
+		for (int j = begin.y; j < begin.y + height; j++)
 		{
 			PutPixel(i, j, c);
 		}

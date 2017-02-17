@@ -5,10 +5,11 @@
 
 class Board
 {
-	int numberOfCells;
-	int sizeofCells;
+	const int numberOfCells;
+	const int sizeofCells;
 	Graphics& gfx;
 public:
 	Board(Graphics& gfx, int numberOfCells = 40, int sizeofCells = 10);
 	void drawCell(const Vec2 & vec2, Color c);
+	int GetDimension() const;
 };

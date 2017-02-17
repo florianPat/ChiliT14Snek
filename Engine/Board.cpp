@@ -8,3 +8,8 @@ void Board::drawCell(const Vec2 & vec2, Color c)
 {
 	gfx.DrawRect(Vec2(vec2.x * sizeofCells, vec2.y * sizeofCells), sizeofCells, sizeofCells, c);
 }
+
+int Board::GetDimension() const
+{
+	return numberOfCells;
+}
