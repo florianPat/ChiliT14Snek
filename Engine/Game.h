@@ -46,11 +46,13 @@ private:
 	/********************************/
 	/*  User Variables              */
 	bool gameOver = false;
+	bool title = true;
 	Board board;
 	Snake snake;
-	Snake::moveLocation newLoc = snake.right;
-	Snake::moveLocation lastLoc = snake.right;
+	Snake::MoveLocation newLoc = snake.right;
+	Snake::MoveLocation lastLoc = snake.right;
 	Goal goal;
-	int needUpdate = 20;
+	int needUpdatePeriod = 20;
+	int needUpdate = needUpdatePeriod;
 	/********************************/
 };

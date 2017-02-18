@@ -8,13 +8,13 @@
 class Goal
 {
 public:
-	Goal(Board& brd);
-	void Respawn(const Vec2& snakeLoc);
+	Goal(Board& brd, const class Snake& snake);
+	void Respawn();
 	void Draw();
-	Vec2 getPosition() const;
 
 private:
 	Board& brd;
+	const Snake& snake;
 	std::random_device rd;
 	std::mt19937 rng;
 	std::uniform_int_distribution<int> xDist, yDist;

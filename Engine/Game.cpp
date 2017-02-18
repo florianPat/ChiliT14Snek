@@ -27,9 +27,10 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd ),
 	board(gfx),
-	snake({ 2, 2 }, 3),
-	goal(board)
+	snake({ 2, 2 }, 3, board),
+	goal(board, snake)
 {
+	board.SpawnObstacle(10);
 }
 
 void Game::Go()
@@ -42,41 +43,60 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (!gameOver)
+	if (title)
 	{
-		if (wnd.kbd.KeyIsPressed(VK_UP))
+		if (wnd.kbd.KeyIsPressed(VK_RETURN))
+			title = false;
+	}
+	else
+	{
+		if (!gameOver)
 		{
-			newLoc = snake.top;
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_DOWN))
-		{
-			newLoc = snake.bottom;
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_LEFT))
-		{
-			newLoc = snake.left;
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-		{
-			newLoc = snake.right;
-		}
-
-		if (needUpdate == 0)
-		{
-			if (snake.posIsInsideHead(goal.getPosition(), newLoc))
+			if (wnd.kbd.KeyIsPressed(VK_UP))
 			{
-				snake.Grow();
-				goal.Respawn(snake.GetHeadPos());
+				newLoc = snake.top;
 			}
-			snake.MoveBy(newLoc);
+			else if (wnd.kbd.KeyIsPressed(VK_DOWN))
+			{
+				newLoc = snake.bottom;
+			}
+			else if (wnd.kbd.KeyIsPressed(VK_LEFT))
+			{
+				newLoc = snake.left;
+			}
+			else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+			{
+				newLoc = snake.right;
+			}
 
-			needUpdate = 20;
-		}
-		--needUpdate;
+			if (needUpdate <= 0)
+			{
+				switch(board.GetTileTypeAtPos(snake.GetHeadPosAfterDeltaMove(newLoc)))
+				{
+					case Board::TileType::Food:
+					{
+						snake.Grow();
+						goal.Respawn();
+						if (needUpdatePeriod > 1)
+							needUpdatePeriod -= 2;
+					}	break;
+					case Board::TileType::Obstacle:
+					{
+						gameOver = true;
+					}	break;
+				}
 
-		if (snake.hitItselfAfterDeltaPos(newLoc))
-		{
-			gameOver = true;
+				if (snake.hitItselfAfterDeltaPos(newLoc))
+				{
+					gameOver = true;
+				}
+
+				if(!gameOver)
+					snake.MoveBy(newLoc);
+
+				needUpdate = needUpdatePeriod;
+			}
+			--needUpdate;
 		}
 	}
 }
@@ -84,7 +104,14 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	if (gameOver)
-		SpriteCodex::DrawGameOver(200, 200, gfx);
-	snake.Draw(board);
-	goal.Draw();
+		SpriteCodex::DrawGameOver(300, 200, gfx);
+
+	if (title)
+		SpriteCodex::DrawTitle(300, 200, gfx);
+	else
+	{
+		snake.Draw();
+		goal.Draw();
+		board.DrawObstacles();
+	}
 }

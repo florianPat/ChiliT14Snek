@@ -1,6 +1,6 @@
 #include "Snake.h"
 
-Snake::Snake(const Vec2& loc, int nStartingBodyTiles)
+Snake::Snake(const Vec2& loc, int nStartingBodyTiles, Board& board) : board(board)
 {
 	segments[0].InitHead(loc);
 	for (int i = 0; i < nStartingBodyTiles; i++)
@@ -10,7 +10,7 @@ Snake::Snake(const Vec2& loc, int nStartingBodyTiles)
 	}
 }
 
-void Snake::MoveBy(moveLocation newLoc)
+void Snake::MoveBy(MoveLocation newLoc)
 {
 	for (int i = nUsedSegments - 1; i > 0; i--)
 	{
@@ -28,7 +28,7 @@ void Snake::Grow()
 	}
 }
 
-void Snake::Draw(Board& board)
+void Snake::Draw()
 {
 	for (int i = 0; i < nUsedSegments; i++)
 	{
@@ -36,13 +36,11 @@ void Snake::Draw(Board& board)
 	}
 }
 
-bool Snake::hitItselfAfterDeltaPos(moveLocation deltaPos)
+bool Snake::hitItselfAfterDeltaPos(MoveLocation deltaPos)
 {
-	Segment head = segments[0];
-	head.MoveBy(deltaPos);
 	for (int i = 0; i < nUsedSegments - 1; i++)
 	{
-		if (head.GetPosition() == segments[i].GetPosition())
+		if (GetHeadPosAfterDeltaMove(deltaPos) == segments[i].GetPosition())
 		{
 			return true;
 		}
@@ -50,7 +48,7 @@ bool Snake::hitItselfAfterDeltaPos(moveLocation deltaPos)
 	return false;
 }
 
-bool Snake::posIsInsideHead(const Vec2 & loc, moveLocation deltaPos)
+bool Snake::posIsInsideHead(const Vec2 & loc, MoveLocation deltaPos)
 {
 	Segment head = segments[0];
 	head.MoveBy(deltaPos);
@@ -63,6 +61,13 @@ bool Snake::posIsInsideHead(const Vec2 & loc, moveLocation deltaPos)
 Vec2 Snake::GetHeadPos() const
 {
 	return segments[0].GetPosition();
+}
+
+Vec2 Snake::GetHeadPosAfterDeltaMove(MoveLocation moveLoc)
+{
+	Segment head = segments[0];
+	head.MoveBy(moveLoc);
+	return head.GetPosition();
 }
 
 Snake::Segment::Segment() : position(0, 0), color(Snake::bodyColor)
@@ -85,7 +90,7 @@ void Snake::Segment::Follow(const Segment & segment)
 	position = segment.position;
 }
 
-void Snake::Segment::MoveBy(moveLocation newLoc)
+void Snake::Segment::MoveBy(MoveLocation newLoc)
 {
 	Vec2 newPos(0,0);
 

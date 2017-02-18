@@ -1,25 +1,23 @@
 #include "Goal.h"
+#include "Snake.h"
 
-Goal::Goal(Board& brd) : brd(brd), rd(), rng(rd()), xDist(0, brd.GetDimension()), yDist(0, brd.GetDimension()), 
-						 position(xDist(rng), yDist(rng))
+Goal::Goal(Board& brd, const Snake& snake) : brd(brd), snake(snake), rd(), rng(rd()), 
+	xDist(0, brd.GetWidth()), yDist(0, brd.GetHeight()), position(xDist(rng), yDist(rng))
 {
+	Respawn();
 }
 
-void Goal::Respawn(const Vec2& snakeLoc)
+void Goal::Respawn()
 {
 	do
 	{
 		position.x = xDist(rng);
 		position.y = yDist(rng);
-	} while (position == snakeLoc);
+	} while (position == snake.GetHeadPos() && brd.GetTileTypeAtPos(position) != Board::TileType::Empty);
+	brd.SetTileTypeAtPos(position, Board::TileType::Food);
 }
 
 void Goal::Draw()
 {
 	brd.drawCell(position, color);
-}
-
-Vec2 Goal::getPosition() const
-{
-	return position;
 }

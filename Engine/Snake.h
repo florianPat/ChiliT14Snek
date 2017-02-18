@@ -8,19 +8,20 @@ class Snake
 {
 public:
 
-	enum moveLocation
+	enum MoveLocation
 	{
 		right, left, top, bottom
 	};
 
-	Snake(const Vec2& loc, int nStartingBodyTiles);
+	Snake(const Vec2& loc, int nStartingBodyTiles, Board& board);
 
-	void MoveBy(moveLocation newLoc);
+	void MoveBy(MoveLocation newLoc);
 	void Grow();
-	void Draw(Board& board);
-	bool hitItselfAfterDeltaPos(moveLocation deltaPos);
-	bool posIsInsideHead(const Vec2& loc, moveLocation deltaPos);
+	void Draw();
+	bool hitItselfAfterDeltaPos(MoveLocation deltaPos);
+	bool posIsInsideHead(const Vec2& loc, MoveLocation deltaPos);
 	Vec2 GetHeadPos() const;
+	Vec2 GetHeadPosAfterDeltaMove(MoveLocation moveLoc);
 private:
 	class Segment
 	{
@@ -33,7 +34,7 @@ private:
 		void InitBody();
 		void Draw(Board& board);
 		void Follow(const Segment& segment);
-		void MoveBy(moveLocation newLoc);
+		void MoveBy(MoveLocation newLoc);
 		Vec2 GetPosition() const;
 	};
 
@@ -43,4 +44,6 @@ private:
 	static constexpr int nMaxSegments = 100;
 	int nUsedSegments = 1;
 	Segment segments[nMaxSegments];
+
+	Board& board;
 };
