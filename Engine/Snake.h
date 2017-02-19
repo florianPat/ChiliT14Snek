@@ -26,21 +26,23 @@ private:
 	class Segment
 	{
 		Vec2 position;
+		Color bodyColor[3] = { Colors::MakeRGB(0u, 90u, 0u), Colors::MakeRGB(0u, 180u, 0u), Colors::MakeRGB(0u, 255u, 0u) };
 		Color color;
+		int index;
 
 	public:
 		Segment();
 		void InitHead(const Vec2& pos);
-		void InitBody();
+		void InitBody(const int lastIndex);
 		void Draw(Board& board);
 		void Follow(const Segment& segment);
 		void MoveBy(MoveLocation newLoc);
 		Vec2 GetPosition() const;
+		int GetIndex() const;
 	};
 
+private:
 	static constexpr Color headColor = Colors::Red;
-	static constexpr Color bodyColor = Colors::Green;
-
 	static constexpr int nMaxSegments = 100;
 	int nUsedSegments = 1;
 	Segment segments[nMaxSegments];

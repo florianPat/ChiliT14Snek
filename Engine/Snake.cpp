@@ -17,13 +17,17 @@ void Snake::MoveBy(MoveLocation newLoc)
 		segments[i].Follow(segments[i - 1]);
 	}
 	segments[0].MoveBy(newLoc);
+	for (int i = 0; i < nUsedSegments - 1; i++)
+	{
+		board.SetTileTypeAtPos(segments[i].GetPosition(), Board::TileType::Snake);
+	}
 }
 
 void Snake::Grow()
 {
 	if (nUsedSegments < nMaxSegments)
 	{
-		segments[nUsedSegments].InitBody();
+		segments[nUsedSegments].InitBody(segments[nUsedSegments - 1].GetIndex());
 		nUsedSegments++;
 	}
 }
@@ -70,7 +74,7 @@ Vec2 Snake::GetHeadPosAfterDeltaMove(MoveLocation moveLoc)
 	return head.GetPosition();
 }
 
-Snake::Segment::Segment() : position(0, 0), color(Snake::bodyColor)
+Snake::Segment::Segment() : position(0, 0), color(Snake::headColor), index(0)
 {
 }
 
@@ -126,7 +130,20 @@ Vec2 Snake::Segment::GetPosition() const
 	return position;
 }
 
-void Snake::Segment::InitBody()
+int Snake::Segment::GetIndex() const
 {
-	color = Snake::bodyColor;
+	return index;
+}
+
+void Snake::Segment::InitBody(const int lastIndex)
+{
+	if (lastIndex < 2)
+	{
+		int newLastIndex = lastIndex;
+		index = ++newLastIndex;
+	}
+	else
+		index = 0;
+
+	color = bodyColor[index];
 }

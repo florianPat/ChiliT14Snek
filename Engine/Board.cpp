@@ -1,13 +1,27 @@
 #include "Board.h"
 
-Board::Board(Graphics& gfx, int sizeofCells) : sizeofCells(sizeofCells), gfx(gfx), rd(), rng(rd()),
+Board::Board(Graphics& gfx, int sizeofCells, int startBoardPos, int padding) : sizeofCells(sizeofCells), startBoardPos(startBoardPos), padding(padding), gfx(gfx), rd(), rng(rd()),
 	xDist(0, GetWidth()), yDist(0, GetHeight())
 {
 }
 
 void Board::drawCell(const Vec2 & vec2, Color c)
 {
-	gfx.DrawRect(Vec2(vec2.x * sizeofCells, vec2.y * sizeofCells), sizeofCells, sizeofCells, c);
+	gfx.DrawRect(Vec2(vec2.x * sizeofCells + startBoardPos * sizeofCells + padding, vec2.y * sizeofCells + startBoardPos * sizeofCells + padding), sizeofCells - padding, sizeofCells - padding, c);
+}
+
+void Board::drawBorder(Color c)
+{
+	for (int i = startBoardPos - 1; i < width; i++)
+	{
+		drawCell({ i, startBoardPos - 1 }, c);
+		drawCell({ i, startBoardPos - 1 + height - 2 }, c);
+	}
+	for (int i = startBoardPos - 1; i < height; i++)
+	{
+		drawCell({ startBoardPos - 1, i }, c);
+		drawCell({ startBoardPos - 1 + width - 1, i }, c);
+	}
 }
 
 int Board::GetWidth() const
@@ -18,6 +32,11 @@ int Board::GetWidth() const
 int Board::GetHeight() const
 {
 	return height;
+}
+
+int Board::GetStartBoardPos() const
+{
+	return startBoardPos;
 }
 
 Board::TileType Board::GetTileTypeAtPos(int x, int y) const
@@ -54,14 +73,30 @@ void Board::SpawnObstacle(int numberOfObstacles)
 	}
 }
 
-void Board::DrawObstacles()
+void Board::DrawObstaclesAndPoison()
 {
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
 		{
 			if (GetTileTypeAtPos(x, y) == TileType::Obstacle)
-				drawCell(Vec2(x ,y), obstacleColor);
+				drawCell(Vec2(x, y), obstacleColor);
+			else if (GetTileTypeAtPos(x, y) == TileType::Poisons)
+				drawCell(Vec2(x, y), poisonColor);
 		}
+	}
+}
+
+void Board::SpawnPoison(int numberOfPoisons)
+{
+	for (int i = 0; i < numberOfPoisons; i++)
+	{
+		Vec2 position = { 0,0 };
+		do
+		{
+			position.x = xDist(rng);
+			position.y = yDist(rng);
+		} while (GetTileTypeAtPos(position) != Board::TileType::Empty);
+		SetTileTypeAtPos(position, Board::TileType::Poisons);
 	}
 }

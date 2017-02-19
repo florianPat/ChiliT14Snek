@@ -30,6 +30,7 @@ Game::Game( MainWindow& wnd )
 	snake({ 2, 2 }, 3, board),
 	goal(board, snake)
 {
+	board.SpawnPoison(80);
 	board.SpawnObstacle(10);
 }
 
@@ -71,18 +72,24 @@ void Game::UpdateModel()
 
 			if (needUpdate <= 0)
 			{
-				switch(board.GetTileTypeAtPos(snake.GetHeadPosAfterDeltaMove(newLoc)))
+				Vec2 snakeNextHeadLoc = snake.GetHeadPosAfterDeltaMove(newLoc);
+
+				switch(board.GetTileTypeAtPos(snakeNextHeadLoc))
 				{
 					case Board::TileType::Food:
 					{
 						snake.Grow();
 						goal.Respawn();
-						if (needUpdatePeriod > 1)
-							needUpdatePeriod -= 2;
 					}	break;
 					case Board::TileType::Obstacle:
 					{
 						gameOver = true;
+					}	break;
+					case Board::TileType::Poisons:
+					{
+						if (needUpdatePeriod > 1)
+							needUpdatePeriod -= 2;
+						board.SetTileTypeAtPos(snakeNextHeadLoc, Board::TileType::Empty);
 					}	break;
 				}
 
@@ -90,6 +97,10 @@ void Game::UpdateModel()
 				{
 					gameOver = true;
 				}
+				
+				if (snakeNextHeadLoc.x < 0 || snakeNextHeadLoc.x > board.GetWidth() - 1 || snakeNextHeadLoc.y < 0 ||
+					snakeNextHeadLoc.y > board.GetHeight() - 1)
+					gameOver = true;
 
 				if(!gameOver)
 					snake.MoveBy(newLoc);
@@ -105,13 +116,13 @@ void Game::ComposeFrame()
 {
 	if (gameOver)
 		SpriteCodex::DrawGameOver(300, 200, gfx);
-
-	if (title)
+	else if (title)
 		SpriteCodex::DrawTitle(300, 200, gfx);
 	else
 	{
 		snake.Draw();
 		goal.Draw();
-		board.DrawObstacles();
+		board.DrawObstaclesAndPoison();
+		board.drawBorder(Colors::Blue);
 	}
 }
