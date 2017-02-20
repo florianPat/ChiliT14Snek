@@ -12,15 +12,15 @@ void Board::drawCell(const Vec2 & vec2, Color c)
 
 void Board::drawBorder(Color c)
 {
-	for (int i = startBoardPos - 1; i < width; i++)
+	for (int i = -1; i < width; i++)
 	{
-		drawCell({ i, startBoardPos - 1 }, c);
-		drawCell({ i, startBoardPos - 1 + height - 2 }, c);
+		drawCell({ i, -1 }, c);
+		drawCell({ i, -1 + height}, c);
 	}
-	for (int i = startBoardPos - 1; i < height; i++)
+	for (int i = -1; i < height; i++)
 	{
-		drawCell({ startBoardPos - 1, i }, c);
-		drawCell({ startBoardPos - 1 + width - 1, i }, c);
+		drawCell({ -1, i }, c);
+		drawCell({ -1 + width, i }, c);
 	}
 }
 

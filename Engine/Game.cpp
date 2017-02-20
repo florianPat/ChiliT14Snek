@@ -30,8 +30,8 @@ Game::Game( MainWindow& wnd )
 	snake({ 2, 2 }, 3, board),
 	goal(board, snake)
 {
-	board.SpawnPoison(80);
-	board.SpawnObstacle(10);
+	board.SpawnPoison(275);
+	board.SpawnObstacle(90);
 }
 
 void Game::Go()
